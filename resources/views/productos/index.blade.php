@@ -601,13 +601,17 @@
                 <i class="fas fa-tachometer-alt"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="{{ route('productos.index') }}" class="menu-item active">
-                <i class="fas fa-tachometer-alt"></i>
+            <a href="{{ route('productos.index') }}" class="menu-item">
+                <i class="fas fa-tags"></i>
                 <span>Agregar P/C</span>
-            </a>
+            </a>            
             <a href="{{ route('categorias.index') }}" class="menu-item">
                 <i class="fas fa-list"></i>
                 <span>Categorías</span>
+            </a>
+            <a href="{{ route('tienda.index') }}" class="menu-item">
+                <i class="fas fa-store"></i>
+                <span>Tienda</span>
             </a>
             <a href="#" class="menu-item">
                 <i class="fas fa-chart-bar"></i>

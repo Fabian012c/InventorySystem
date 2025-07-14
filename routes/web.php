@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\TiendaController;
+
 
 // Dashboard principal
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
@@ -28,3 +30,7 @@ Route::post('/categorias', [CategoriaController::class, 'store'])->name('categor
 Route::put('/categorias/{categoria}', [CategoriaController::class, 'update'])->name('categorias.update');
 Route::delete('/categorias/{categoria}', [CategoriaController::class, 'destroy'])->name('categorias.destroy');
 Route::get('/categorias/{categoria}/editar', [CategoriaController::class, 'getCategoria'])->name('categorias.get');
+
+// Rutas para Tienda
+Route::get('/tienda', [TiendaController::class, 'index'])->name('tienda.index');
+Route::get('/tienda/producto/{id}', [TiendaController::class, 'show'])->name('tienda.producto');

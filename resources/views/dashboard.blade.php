@@ -368,7 +368,26 @@
             border-left: 4px solid #10b981;
             color: #065f46;
         }
-
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-left: 1.5rem;
+        }
+        .user-name {
+            font-weight: 500;
+        }
         .alert-error {
             background-color: #fee2e2;
             border-left: 4px solid #ef4444;
@@ -404,7 +423,9 @@
                 padding: 0 1rem;
             }
         }
-
+            .user-name {
+                display: none;
+            }
         @media (max-width: 576px) {
             .stats-grid {
                 grid-template-columns: 1fr;
@@ -423,17 +444,21 @@
             <h2><i class="fas fa-boxes"></i> <span>InventarioPro</span></h2>
         </div>
         <div class="sidebar-menu">
-            <a href="{{ route('dashboard.index') }}" class="menu-item active">
+            <a href="{{ route('dashboard.index') }}" class="menu-item">
                 <i class="fas fa-tachometer-alt"></i>
                 <span>Dashboard</span>
             </a>
             <a href="{{ route('productos.index') }}" class="menu-item">
-                <i class="fas fa-tachometer-alt"></i>
+                <i class="fas fa-tags"></i>
                 <span>Agregar P/C</span>
-            </a>
+            </a>            
             <a href="{{ route('categorias.index') }}" class="menu-item">
                 <i class="fas fa-list"></i>
                 <span>Categorías</span>
+            </a>
+            <a href="{{ route('tienda.index') }}" class="menu-item">
+                <i class="fas fa-store"></i>
+                <span>Tienda</span>
             </a>
             <a href="#" class="menu-item">
                 <i class="fas fa-chart-bar"></i>
@@ -451,7 +476,10 @@
                 <i class="fas fa-search"></i>
                 <input type="text" name="q" placeholder="Buscar productos, categorías..." value="{{ request('q') }}">
             </form>
-            <div class="app-title">Sistema de Inventario</div>
+            <div class="user-info">
+                <div class="user-avatar">PS</div>
+                <div class="user-name">Psiconauta</div>
+            </div>
         </div>
 
         <!-- Dashboard Content -->

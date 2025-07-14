@@ -401,6 +401,28 @@
                 padding: 1.5rem;
             }
         }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-left: 1.5rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .user-name {
+            font-weight: 500;
+        }
 
         @media (max-width: 576px) {
             .stats-grid {
@@ -420,6 +442,9 @@
             .search-form input {
                 max-width: none;
             }
+            .user-name {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -435,12 +460,16 @@
                 <span>Dashboard</span>
             </a>
             <a href="{{ route('productos.index') }}" class="menu-item">
-                <i class="fas fa-tachometer-alt"></i>
+                <i class="fas fa-tags"></i>
                 <span>Agregar P/C</span>
-            </a>
-            <a href="{{ route('categorias.index') }}" class="menu-item active">
+            </a>            
+            <a href="{{ route('categorias.index') }}" class="menu-item">
                 <i class="fas fa-list"></i>
                 <span>Categorías</span>
+            </a>
+            <a href="{{ route('tienda.index') }}" class="menu-item">
+                <i class="fas fa-store"></i>
+                <span>Tienda</span>
             </a>
             <a href="#" class="menu-item">
                 <i class="fas fa-chart-bar"></i>
@@ -457,7 +486,10 @@
                 <i class="fas fa-search"></i>
                 <input type="text" name="q" placeholder="Buscar categorías..." value="{{ request('q') }}">
             </form>
-            <div class="app-title">Sistema de Inventario</div>
+            <div class="user-info">
+                <div class="user-avatar">PS</div>
+                <div class="user-name">Psiconauta</div>
+            </div>
         </div>
 
         <!-- Dashboard Content -->
