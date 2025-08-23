@@ -674,7 +674,7 @@
                         <i class="fas fa-plus-circle"></i>
                         <h3 class="form-title">Añadir Nuevo Producto</h3>
                     </div>
-                    <form action="{{ route('productos.store') }}" method="POST">
+                    <form action="{{ route('productos.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="form-group">
                             <label for="productName">Nombre del Producto</label>
@@ -690,6 +690,10 @@
                                 <label for="productMinStock">Stock Mínimo</label>
                                 <input type="number" id="productMinStock" name="stock_minimo" class="form-control" placeholder="0" min="0" value="{{ old('stock_minimo', 10) }}" required>
                             </div>
+                            <div class="form-group">
+                                <label for="productPrice">Precio</label>
+                                <input type="number" id="productPrice" name="precio" class="form-control" placeholder="0.00" min="0" step="0.01" value="{{ old('precio') }}" required>
+                            </div>
                         </div>
                         
                         <div class="form-group">
@@ -702,6 +706,11 @@
                                     </option>
                                 @endforeach
                             </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="imagen">Imagen del Producto</label>
+                            <input type="file" id="imagen" name="imagen" class="form-control">
                         </div>
                         
                         <div class="form-group">
@@ -882,7 +891,7 @@
                 <h3 class="form-title">Editar Producto</h3>
                 <button onclick="closeModal('editProductModal')">&times;</button>
             </div>
-            <form id="editProductForm" method="POST">
+            <form id="editProductForm" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="form-group">
@@ -899,6 +908,10 @@
                         <label for="editProductMinStock">Stock Mínimo</label>
                         <input type="number" id="editProductMinStock" name="stock_minimo" class="form-control" min="0" required>
                     </div>
+                     <div class="form-group">
+                        <label for="editProductPrice">Precio</label>
+                        <input type="number" id="editProductPrice" name="precio" class="form-control" placeholder="0.00" min="0" step="0.01" required>
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -914,6 +927,15 @@
                 <div class="form-group">
                     <label for="editProductDescription">Descripción</label>
                     <textarea id="editProductDescription" name="descripcion" class="form-control" rows="2"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Imagen Actual</label>
+                    <div>
+                        <img id="currentProductImage" src="" alt="Imagen Actual" style="max-width: 100px; border-radius: 8px; margin-bottom: 10px;">
+                    </div>
+                    <label for="editProductImage">Cambiar Imagen (Opcional)</label>
+                    <input type="file" id="editProductImage" name="imagen" class="form-control">
                 </div>
                 
                 <button type="submit" class="btn btn-primary btn-block">
@@ -979,8 +1001,18 @@
                 document.getElementById('editProductName').value = producto.nombre;
                 document.getElementById('editProductQuantity').value = producto.cantidad;
                 document.getElementById('editProductMinStock').value = producto.stock_minimo;
+                document.getElementById('editProductPrice').value = producto.precio;
                 document.getElementById('editProductDescription').value = producto.descripcion || '';
                 document.getElementById('editProductCategory').value = producto.categoria_id;
+
+                // Llenar la imagen actual
+                const currentImage = document.getElementById('currentProductImage');
+                if (producto.imagen) {
+                    currentImage.src = `/storage/${producto.imagen}`;
+                    currentImage.style.display = 'block';
+                } else {
+                    currentImage.style.display = 'none';
+                }
                 
                 // Configurar la ruta del formulario
                 document.getElementById('editProductForm').action = `/productos/${id}`;

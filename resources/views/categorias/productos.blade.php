@@ -161,6 +161,38 @@
             font-weight: 500;
         }
 
+        /* Breadcrumb */
+        .breadcrumb {
+            background-color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--primary-dark);
+        }
+
+        .breadcrumb .separator {
+            color: var(--gray-light);
+        }
+
+        .breadcrumb span {
+            color: var(--gray);
+            font-weight: 500;
+        }
+
         /* Dashboard Content */
         .dashboard-content {
             padding: 2rem;
@@ -499,6 +531,76 @@
             margin-top: 2rem;
         }
 
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000; /* Ensure modal is on top */
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header .form-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .modal-header button {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .modal-header button:hover {
+            color: var(--dark);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--gray-light);
+            background-color: var(--light);
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .sidebar {
@@ -566,8 +668,8 @@
                 <i class="fas fa-plus-circle"></i>
                 <span>Productos</span>
             </a>
-            <a href="#" class="menu-item">
-                <i class="fas fas fa-store"></i>
+            <a href="{{ route('tienda.index') }}" class="menu-item">
+                <i class="fas fa-store"></i>
                 <span>Tienda</span>
             </a>
             <a href="#" class="menu-item">
@@ -587,7 +689,6 @@
             </div>
               <div class="user-info">
                 <div class="user-avatar">PS</div>
-                <div class="user-name">Psiconauta</div>
             </div>
         </header>
 
@@ -628,7 +729,7 @@
             <div class="products-card">
                 <div class="card-header">
                     <h3 class="card-title">Lista de Productos</h3>
-                    <a href="{{ route('productos.create', ['categoria_id' => $categoria->id]) }}" class="btn btn-primary">
+                    <a href="{{ route('productos.index') }}" class="btn btn-primary">
                         <i class="fas fa-plus"></i> Nuevo Producto
                     </a>
                 </div>
@@ -678,9 +779,9 @@
                                             <td>{{ Str::limit($producto->descripcion, 30) }}</td>
                                             <td>
                                                 <div class="actions">
-                                                    <a href="{{ route('productos.get', $producto->id) }}" class="action-btn btn-edit">
+                                                    <button onclick="editarProducto({{ $producto->id }})" class="action-btn btn-edit" title="Editar">
                                                         <i class="fas fa-edit"></i>
-                                                    </a>
+                                                    </button>
                                                     <form method="POST" action="{{ route('productos.destroy', $producto->id) }}" onsubmit="return confirm('¿Está seguro de eliminar este producto?');">
                                                         @csrf
                                                         @method('DELETE')
@@ -700,7 +801,7 @@
                             <i class="fas fa-box-open"></i>
                             <h4>No hay productos registrados</h4>
                             <p>No se encontraron productos en esta categoría. Puedes agregar uno nuevo haciendo clic en el botón a continuación.</p>
-                            <a href="{{ route('productos.create', ['categoria_id' => $categoria->id]) }}" class="btn btn-primary">
+                            <a href="{{ route('productos.index') }}" class="btn btn-primary">
                                 <i class="fas fa-plus"></i> Agregar Producto
                             </a>
                         </div>
@@ -714,30 +815,113 @@
         </div>
     </div>
 
+    <!-- Modal para editar producto -->
+    <div id="editProductModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="form-title">Editar Producto</h3>
+                <button onclick="closeModal('editProductModal')">&times;</button>
+            </div>
+            <form id="editProductForm" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+                <div class="form-group">
+                    <label for="editProductName">Nombre del Producto</label>
+                    <input type="text" id="editProductName" name="nombre" class="form-control" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editProductQuantity">Cantidad</label>
+                        <input type="number" id="editProductQuantity" name="cantidad" class="form-control" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProductMinStock">Stock Mínimo</label>
+                        <input type="number" id="editProductMinStock" name="stock_minimo" class="form-control" min="0" required>
+                    </div>
+                     <div class="form-group">
+                        <label for="editProductPrice">Precio</label>
+                        <input type="number" id="editProductPrice" name="precio" class="form-control" placeholder="0.00" min="0" step="0.01" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editProductCategory">Categoría</label>
+                    <select id="editProductCategory" name="categoria_id" class="form-control" required>
+                        <option value="">Selecciona una categoría</option>
+                        @foreach($categorias as $cat)
+                            <option value="{{ $cat->id }}">{{ $cat->nombre }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editProductDescription">Descripción</label>
+                    <textarea id="editProductDescription" name="descripcion" class="form-control" rows="2"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Imagen Actual</label>
+                    <div>
+                        <img id="currentProductImage" src="" alt="Imagen Actual" style="max-width: 100px; border-radius: 8px; margin-bottom: 10px;">
+                    </div>
+                    <label for="editProductImage">Cambiar Imagen (Opcional)</label>
+                    <input type="file" id="editProductImage" name="imagen" class="form-control">
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-save"></i> Guardar Cambios
+                </button>
+            </form>
+        </div>
+    </div>
+
     <script>
-        // Funcionalidad adicional puede ir aquí
-        document.addEventListener('DOMContentLoaded', function() {
-            // Ejemplo: Resaltar fila al pasar el mouse
-            const rows = document.querySelectorAll('.table tbody tr');
-            rows.forEach(row => {
-                row.addEventListener('mouseenter', () => {
-                    row.style.backgroundColor = '#f8f9fa';
-                });
-                row.addEventListener('mouseleave', () => {
-                    row.style.backgroundColor = '';
-                });
-            });
-            
-            // Ejemplo: Confirmación antes de eliminar
-            const deleteButtons = document.querySelectorAll('.btn-delete');
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    if (!confirm('¿Está seguro de eliminar este producto?')) {
-                        e.preventDefault();
-                    }
-                });
-            });
-        });
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        async function editarProducto(id) {
+            try {
+                // El nombre de la ruta es 'productos.get', que apunta a /productos/{producto}/editar
+                const response = await fetch(`/productos/${id}/editar`);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const producto = await response.json();
+                
+                // Llenar el formulario
+                document.getElementById('editProductName').value = producto.nombre;
+                document.getElementById('editProductQuantity').value = producto.cantidad;
+                document.getElementById('editProductMinStock').value = producto.stock_minimo;
+                document.getElementById('editProductPrice').value = producto.precio;
+                document.getElementById('editProductDescription').value = producto.descripcion || '';
+                document.getElementById('editProductCategory').value = producto.categoria_id;
+
+                // Llenar la imagen actual
+                const currentImage = document.getElementById('currentProductImage');
+                if (producto.imagen) {
+                    currentImage.src = `/storage/${producto.imagen}`;
+                    currentImage.style.display = 'block';
+                } else {
+                    currentImage.style.display = 'none';
+                }
+                
+                // Configurar la ruta del formulario
+                document.getElementById('editProductForm').action = `/productos/${producto.id}`;
+                
+                // Mostrar modal
+                document.getElementById('editProductModal').style.display = 'flex';
+            } catch (error) {
+                console.error('Error al obtener el producto:', error);
+                alert('Error al cargar los datos del producto para editar.');
+            }
+        }
+
+        // Cerrar modales al hacer clic fuera del contenido
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
     </script>
 </body>
 </html>

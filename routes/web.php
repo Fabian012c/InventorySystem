@@ -34,3 +34,5 @@ Route::get('/categorias/{categoria}/editar', [CategoriaController::class, 'getCa
 // Rutas para Tienda
 Route::get('/tienda', [TiendaController::class, 'index'])->name('tienda.index');
 Route::get('/tienda/producto/{id}', [TiendaController::class, 'show'])->name('tienda.producto');
+Route::get('/tienda/categoria/{categoria}', [TiendaController::class, 'categoria'])->name('tienda.categoria');
+Route::get('/tienda/categorias', [TiendaController::class, 'todasLasCategorias'])->name('tienda.categorias');

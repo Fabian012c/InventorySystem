@@ -37,13 +37,23 @@ class DashboardController extends Controller
         // También puedes preparar topProducts para el segundo gráfico
         $topProducts = Producto::orderBy('cantidad', 'desc')->take(10)->get();
 
+        // Preparar datos para el gráfico de dispersión: Stock Mínimo vs. Stock Actual
+        $scatterData = Producto::whereNotNull('stock_minimo')->get(['stock_minimo', 'cantidad', 'nombre'])->map(function ($producto) {
+            return [
+                'x' => $producto->stock_minimo,
+                'y' => $producto->cantidad,
+                'label' => $producto->nombre,
+            ];
+        });
+
         return view('dashboard', compact(
             'categorias',
             'stats',
             'lowStockProducts',
             'chartLabels',
             'chartValues',
-            'topProducts'
+            'topProducts',
+            'scatterData'
         ));
     }
 

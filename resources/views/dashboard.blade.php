@@ -478,7 +478,6 @@
             </form>
             <div class="user-info">
                 <div class="user-avatar">PS</div>
-                <div class="user-name">Psiconauta</div>
             </div>
         </div>
 
@@ -561,6 +560,18 @@
                     </div>
                     <div class="chart-wrapper">
                         <canvas id="topProductsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scatter Chart Section -->
+            <div class="charts-container" style="grid-template-columns: 1fr;">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">Análisis de Stock: Actual vs. Mínimo</div>
+                    </div>
+                    <div class="chart-wrapper" style="height: 350px;">
+                        <canvas id="stockScatterChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -718,6 +729,55 @@
                         callbacks: {
                             label: function(context) {
                                 return `Stock: ${context.raw}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Scatter Plot - Stock vs. Min Stock
+        const scatterCtx = document.getElementById('stockScatterChart').getContext('2d');
+        const scatterChart = new Chart(scatterCtx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Producto',
+                    data: {!! json_encode($scatterData) !!},
+                    backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                    borderColor: 'rgba(239, 68, 68, 1)',
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        title: {
+                            display: true,
+                            text: 'Stock Mínimo'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Stock Actual'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const point = context.raw;
+                                return `${point.label}: (Mín: ${point.x}, Actual: ${point.y})`;
                             }
                         }
                     }

@@ -12,11 +12,14 @@ class Producto extends Model
         'stock_minimo', 
         'categoria_id',
         'descripcion',
-        'codigo'
+        'codigo',
+        'imagen',
+        'precio'
     ];
 
     public function categoria()
     {
         return $this->belongsTo(Categoria::class);
     }
-}
+
+    }

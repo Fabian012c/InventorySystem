@@ -419,6 +419,23 @@
             min-height: 60px;
         }
 
+        .product-stock-info {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--gray-dark);
+            margin-bottom: 1rem;
+        }
+        .stock-value {
+            color: var(--success);
+            font-weight: 600;
+        }
+        .stock-value.stock-low {
+            color: var(--warning);
+        }
+        .stock-value.stock-out {
+            color: var(--secondary);
+        }
+
         .product-price {
             display: flex;
             align-items: center;
@@ -813,10 +830,9 @@
                 <span class="logo-text">La Tiendita</span>
             </a>
             
-            <nav class="nav">
+                        <nav class="nav">
                 <a href="{{ route('tienda.index') }}" class="nav-link active">Inicio</a>
-                <a href="{{ route('dashboard.index') }}" class="nav-link">Dashboard</a>
-                <a href="{{ route('categorias.index') }}" class="nav-link">Categorías</a>
+                <a href="{{ route('tienda.categorias') }}" class="nav-link">Categorías</a>
                 <a href="#" class="nav-link">Ofertas</a>
                 <a href="#" class="nav-link">Nosotros</a>
             </nav>
@@ -896,7 +912,7 @@
                     @endif
 
                     <div class="product-image-container">
-                        <img src="{{ $producto->imagen ?? 'https://via.placeholder.com/300x200?text=Producto' }}" 
+                        <img src="{{ $producto->imagen ? asset('storage/' . $producto->imagen) : 'https://via.placeholder.com/300x200?text=Producto' }}" 
                              alt="{{ $producto->nombre }}" class="product-image">
                     </div>
 
@@ -916,6 +932,13 @@
                         </div>
                         
                         <p class="product-description">{{ \Illuminate\Support\Str::limit($producto->descripcion ?? 'Descripción no disponible', 100, '...') }}</p>
+
+                        <div class="product-stock-info">
+                            <span>Stock disponible: </span>
+                            <span class="stock-value @if($producto->cantidad <= 0) stock-out @elseif($producto->cantidad < $producto->stock_minimo) stock-low @endif">
+                                {{ $producto->cantidad }}
+                            </span>
+                        </div>
 
                         <div class="product-price">
                             @if(isset($producto->precio_original) && $producto->precio_original > $producto->precio)

@@ -35,6 +35,8 @@ class ProductoController extends Controller
             'stock_minimo' => 'required|integer|min:0',
             'categoria_id' => 'required|exists:categorias,id',
             'descripcion' => 'nullable|string',
+            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'precio' => 'required|numeric|min:0',
         ], [
             'categoria_id.exists' => 'La categoría seleccionada no es válida.'
         ]);
@@ -46,14 +48,15 @@ class ProductoController extends Controller
                 ->with('form_error', 'producto');
         }
 
-        Producto::create([
-            'nombre' => $request->nombre,
-            'cantidad' => $request->cantidad,
-            'stock_minimo' => $request->stock_minimo,
-            'categoria_id' => $request->categoria_id,
-            'descripcion' => $request->descripcion,
-            'codigo' => 'PROD-' . Str::upper(Str::random(8)),
-        ]);
+        $data = $request->all();
+        $data['codigo'] = 'PROD-' . Str::upper(Str::random(8));
+
+        if ($request->hasFile('imagen')) {
+            $path = $request->file('imagen')->store('productos', 'public');
+            $data['imagen'] = $path;
+        }
+
+        Producto::create($data);
 
         return redirect()->route('dashboard.index')
             ->with('success', 'Producto añadido exitosamente.');
@@ -69,6 +72,8 @@ class ProductoController extends Controller
             'stock_minimo' => 'required|integer|min:0',
             'categoria_id' => 'required|exists:categorias,id',
             'descripcion' => 'nullable|string',
+            'precio' => 'required|numeric|min:0',
+            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
 
         if ($validator->fails()) {
@@ -78,13 +83,17 @@ class ProductoController extends Controller
                 ->with('edit_product_id', $id);
         }
 
-        $producto->update([
-            'nombre' => $request->nombre,
-            'cantidad' => $request->cantidad,
-            'stock_minimo' => $request->stock_minimo,
-            'categoria_id' => $request->categoria_id,
-            'descripcion' => $request->descripcion,
-        ]);
+        $data = $request->except('imagen');
+
+        if ($request->hasFile('imagen')) {
+            if ($producto->imagen && Storage::disk('public')->exists($producto->imagen)) {
+                Storage::disk('public')->delete($producto->imagen);
+            }
+            $path = $request->file('imagen')->store('productos', 'public');
+            $data['imagen'] = $path;
+        }
+
+        $producto->update($data);
 
         return redirect()->route('dashboard.index')
             ->with('success', 'Producto actualizado correctamente.');

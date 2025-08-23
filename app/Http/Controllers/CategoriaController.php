@@ -115,7 +115,8 @@ class CategoriaController extends Controller
     public function mostrarProductos($id) 
     {
         $categoria = Categoria::with('productos')->findOrFail($id);
-        return view('categorias.productos', compact('categoria'));
+        $categorias = Categoria::all(); // Cargar todas las categorías
+        return view('categorias.productos', compact('categoria', 'categorias'));
     }
 
 }
