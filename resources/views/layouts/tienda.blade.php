@@ -43,6 +43,16 @@
         .nav-link { color: var(--gray-dark); text-decoration: none; font-weight: 500; transition: var(--transition); position: relative; font-size: 0.95rem; padding: 0.5rem 0; }
         .nav-link:hover, .nav-link.active { color: var(--primary); }
         .main { max-width: 1200px; margin: 0 auto; padding: 3rem 1.5rem; }
+
+        /* User Menu Styles */
+        .user-menu { position: relative; }
+        .user-menu-trigger { cursor: pointer; }
+        .user-menu-dropdown { display: none; position: absolute; right: 0; top: 100%; background-color: var(--light); border-radius: var(--border-radius); box-shadow: var(--box-shadow-lg); min-width: 180px; z-index: 1100; margin-top: 0.5rem; padding: 0.5rem 0; border: 1px solid var(--gray-light); }
+        .user-menu:hover .user-menu-dropdown { display: block; }
+        .dropdown-item { display: block; padding: 0.75rem 1.25rem; color: var(--dark); text-decoration: none; font-size: 0.9rem; transition: var(--transition); }
+        .dropdown-item:hover { background-color: var(--gray-extra-light); color: var(--primary); }
+        .d-none { display: none; }
+
         .footer { background-color: var(--primary-dark); color: white; padding: 4rem 0 2rem; margin-top: 3rem; }
         .footer-container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
         .copyright { text-align: center; padding-top: 2.5rem; margin-top: 3rem; border-top: 1px solid rgba(255, 255, 255, 0.1); color: var(--gray); font-size: 0.85rem; }
@@ -62,6 +72,29 @@
                 <a href="{{ route('tienda.categorias') }}" class="nav-link {{ request()->routeIs('tienda.categorias') || request()->routeIs('tienda.categoria') ? 'active' : '' }}">Categorías</a>
                 <a href="#" class="nav-link">Ofertas</a>
                 <a href="#" class="nav-link">Nosotros</a>
+
+                @guest
+                    <a href="{{ route('login') }}" class="nav-link">Login</a>
+                    <a href="{{ route('register') }}" class="nav-link">Register</a>
+                @else
+                    <div class="user-menu">
+                        <a href="#" class="nav-link user-menu-trigger"><i class="fas fa-user-circle"></i> {{ Auth::user()->name }}</a>
+                        <div class="user-menu-dropdown">
+                            @if(Auth::user()->rol == 'admin')
+                                <a href="{{ route('dashboard.index') }}" class="dropdown-item">Inventario</a>
+                            @endif
+                            <a href="#" class="dropdown-item">Mi Carrito</a>
+                            <a class="dropdown-item" href="{{ route('logout') }}"
+                               onclick="event.preventDefault();
+                                             document.getElementById('logout-form').submit();">
+                                {{ __('Logout') }}
+                            </a>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                @csrf
+                            </form>
+                        </div>
+                    </div>
+                @endguest
             </nav>
         </div>
     </header>

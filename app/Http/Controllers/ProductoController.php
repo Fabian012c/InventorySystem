@@ -37,6 +37,7 @@ class ProductoController extends Controller
             'descripcion' => 'nullable|string',
             'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'precio' => 'required|numeric|min:0',
+            'precio_oferta' => 'nullable|numeric|min:0|lt:precio',
         ], [
             'categoria_id.exists' => 'La categoría seleccionada no es válida.'
         ]);
@@ -73,6 +74,7 @@ class ProductoController extends Controller
             'categoria_id' => 'required|exists:categorias,id',
             'descripcion' => 'nullable|string',
             'precio' => 'required|numeric|min:0',
+            'precio_oferta' => 'nullable|numeric|min:0|lt:precio',
             'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
 

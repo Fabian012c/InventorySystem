@@ -36,3 +36,15 @@ Route::get('/tienda', [TiendaController::class, 'index'])->name('tienda.index');
 Route::get('/tienda/producto/{id}', [TiendaController::class, 'show'])->name('tienda.producto');
 Route::get('/tienda/categoria/{categoria}', [TiendaController::class, 'categoria'])->name('tienda.categoria');
 Route::get('/tienda/categorias', [TiendaController::class, 'todasLasCategorias'])->name('tienda.categorias');
+Route::get('/tienda/ofertas', [TiendaController::class, 'ofertas'])->name('tienda.ofertas');
+Route::get('/tienda/nosotros', [TiendaController::class, 'nosotros'])->name('tienda.nosotros');
+Route::get('/tienda/buscar', [TiendaController::class, 'buscar'])->name('tienda.buscar');
+
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth'])->name('dashboard');
+
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+    ->name('logout');

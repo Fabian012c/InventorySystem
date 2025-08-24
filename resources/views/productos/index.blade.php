@@ -739,18 +739,24 @@
                         
                         <div class="form-group">
                             <label for="categoryColor">Color de Identificación</label>
-                            <input type="hidden" id="selectedColor" name="color" value="{{ old('color', '#3b82f6') }}">
-                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                                @foreach(['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'] as $color)
-                                    <div style="width: 30px; height: 30px; border-radius: 50%; background: {{ $color }}; cursor: pointer; {{ old('color', '#3b82f6') == $color ? 'border: 2px solid #1e293b;' : '' }}" data-color="{{ $color }}"></div>
-                                @endforeach
-                            </div>
+                            <input type="color" id="categoryColor" name="color" class="form-control" value="{{ old('color', '#3b82f6') }}" style="height: 45px; padding: 5px;">
                         </div>
                         
                         <div class="form-group">
                             <label for="categoryIcon">Icono</label>
                             <select id="categoryIcon" name="icono" class="form-control" required>
                                 <option value="">Selecciona un icono</option>
+                                <option value="fas fa-shopping-basket" {{ old('icono') == 'fas fa-shopping-basket' ? 'selected' : '' }}>🛒 Abarrotes</option>
+                                <option value="fas fa-cheese" {{ old('icono') == 'fas fa-cheese' ? 'selected' : '' }}>🧀 Lácteos</option>
+                                <option value="fas fa-drumstick-bite" {{ old('icono') == 'fas fa-drumstick-bite' ? 'selected' : '' }}>🍗 Carnes</option>
+                                <option value="fas fa-apple-alt" {{ old('icono') == 'fas fa-apple-alt' ? 'selected' : '' }}>🍎 Frutas y Verduras</option>
+                                <option value="fas fa-bread-slice" {{ old('icono') == 'fas fa-bread-slice' ? 'selected' : '' }}>🍞 Panadería</option>
+                                <option value="fas fa-wine-bottle" {{ old('icono') == 'fas fa-wine-bottle' ? 'selected' : '' }}>🍾 Bebidas</option>
+                                <option value="fas fa-spray-can" {{ old('icono') == 'fas fa-spray-can' ? 'selected' : '' }}>🧼 Limpieza</option>
+                                <option value="fas fa-snowflake" {{ old('icono') == 'fas fa-snowflake' ? 'selected' : '' }}>🧊 Congelados</option>
+                                <option value="fas fa-fish" {{ old('icono') == 'fas fa-fish' ? 'selected' : '' }}>🐟 Pescados y Mariscos</option>
+                                <option value="fas fa-bath" {{ old('icono') == 'fas fa-bath' ? 'selected' : '' }}>🧴 Cuidado Personal</option>
+                                <option value="fas fa-paw" {{ old('icono') == 'fas fa-paw' ? 'selected' : '' }}>🐾 Mascotas</option>
                                 <option value="fas fa-laptop" {{ old('icono') == 'fas fa-laptop' ? 'selected' : '' }}>💻 Computadora</option>
                                 <option value="fas fa-mobile-alt" {{ old('icono') == 'fas fa-mobile-alt' ? 'selected' : '' }}>📱 Teléfono</option>
                                 <option value="fas fa-tshirt" {{ old('icono') == 'fas fa-tshirt' ? 'selected' : '' }}>👕 Ropa</option>
@@ -909,8 +915,12 @@
                         <input type="number" id="editProductMinStock" name="stock_minimo" class="form-control" min="0" required>
                     </div>
                      <div class="form-group">
-                        <label for="editProductPrice">Precio</label>
+                        <label for="editProductPrice">Precio Regular</label>
                         <input type="number" id="editProductPrice" name="precio" class="form-control" placeholder="0.00" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProductOfferPrice">Precio de Oferta (Opcional)</label>
+                        <input type="number" id="editProductOfferPrice" name="precio_oferta" class="form-control" placeholder="0.00" min="0" step="0.01">
                     </div>
                 </div>
                 
@@ -1002,6 +1012,7 @@
                 document.getElementById('editProductQuantity').value = producto.cantidad;
                 document.getElementById('editProductMinStock').value = producto.stock_minimo;
                 document.getElementById('editProductPrice').value = producto.precio;
+                document.getElementById('editProductOfferPrice').value = producto.precio_oferta || '';
                 document.getElementById('editProductDescription').value = producto.descripcion || '';
                 document.getElementById('editProductCategory').value = producto.categoria_id;
 
@@ -1052,34 +1063,6 @@
         function closeModal(modalId) {
             document.getElementById(modalId).style.display = 'none';
         }
-
-        // Selector de color en formulario de categoría
-        document.querySelectorAll('[data-color]').forEach(color => {
-            color.addEventListener('click', function() {
-                const selectedColor = this.getAttribute('data-color');
-                document.getElementById('selectedColor').value = selectedColor;
-                
-                // Actualizar la interfaz
-                this.parentNode.querySelectorAll('[data-color]').forEach(el => {
-                    el.style.border = 'none';
-                });
-                this.style.border = '2px solid #1e293b';
-            });
-        });
-
-        // Selector de color en formulario de edición de categoría
-        document.querySelectorAll('#editCategoryModal [data-color]').forEach(color => {
-            color.addEventListener('click', function() {
-                const selectedColor = this.getAttribute('data-color');
-                document.getElementById('editSelectedColor').value = selectedColor;
-                
-                // Actualizar la interfaz
-                this.parentNode.querySelectorAll('[data-color]').forEach(el => {
-                    el.style.border = 'none';
-                });
-                this.style.border = '2px solid #1e293b';
-            });
-        });
 
         // Cerrar modales al hacer clic fuera del contenido
         window.onclick = function(event) {

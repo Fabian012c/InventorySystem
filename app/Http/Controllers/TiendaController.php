@@ -43,4 +43,42 @@ class TiendaController extends Controller
         $categorias = $query->get();
         return view('tienda.categorias', ['nav_categorias' => $categorias, 'categorias' => $categorias]);
     }
+
+    public function ofertas(Request $request)
+    {
+        $query = Producto::onSale()->with('categoria');
+
+        if ($request->get('sort') == 'precio_asc') {
+            $query->orderBy('precio_oferta', 'asc');
+        } elseif ($request->get('sort') == 'precio_desc') {
+            $query->orderBy('precio_oferta', 'desc');
+        }
+
+        $productos = $query->paginate(12);
+        $nav_categorias = Categoria::all();
+
+        return view('tienda.ofertas', compact('productos', 'nav_categorias'));
+    }
+
+    public function nosotros()
+    {
+        $nav_categorias = Categoria::all();
+        return view('tienda.nosotros', compact('nav_categorias'));
+    }
+
+    public function buscar(Request $request)
+    {
+        $query = $request->input('q');
+        
+        $productos = Producto::with('categoria')
+            ->where('nombre', 'LIKE', "%{$query}%")
+            ->orWhere('descripcion', 'LIKE', "%{$query}%")
+            ->paginate(12);
+            
+        $nav_categorias = Categoria::all();
+
+        $productos->appends(['q' => $query]);
+
+        return view('tienda.buscar', compact('productos', 'nav_categorias', 'query'));
+    }
 }

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ofertas Especiales | Premium Store</title>
+    <meta name="description" content="Encuentra los mejores productos en oferta.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --primary-dark: #1a252f;
+            --primary-light: #ecf0f1;
+            --secondary: #e74c3c;
+            --secondary-light: #fadbd8;
+            --accent: #3498db;
+            --accent-light: #d6eaf8;
+            --warning: #f39c12;
+            --warning-light: #fdebd0;
+            --success: #27ae60;
+            --success-light: #d5f5e3;
+            --light: #ffffff;
+            --dark: #2c3e50;
+            --gray-dark: #7f8c8d;
+            --gray: #bdc3c7;
+            --gray-light: #ecf0f1;
+            --gray-extra-light: #f9f9f9;
+            --border-radius: 0.375rem;
+            --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --box-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+        body { background-color: var(--gray-extra-light); color: var(--dark); line-height: 1.6; }
+        .header { background-color: var(--light); box-shadow: var(--box-shadow); position: sticky; top: 0; z-index: 1000; padding: 0.75rem 0; border-bottom: 1px solid var(--gray-light); }
+        .header-container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+        .logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; transition: var(--transition); }
+        .logo:hover { opacity: 0.9; }
+        .logo-icon { width: 42px; height: 42px; background-color: var(--primary); color: white; border-radius: var(--border-radius); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+        .logo-text { font-size: 1.5rem; font-weight: 700; color: var(--dark); letter-spacing: -0.5px; }
+        .nav { display: flex; align-items: center; gap: 1.5rem; }
+        .nav-link { color: var(--gray-dark); text-decoration: none; font-weight: 500; transition: var(--transition); position: relative; font-size: 0.95rem; padding: 0.5rem 0; }
+        .nav-link:hover, .nav-link.active { color: var(--primary); }
+        .nav-link.active::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background-color: var(--primary); }
+        .nav-icons { display: flex; align-items: center; gap: 0.75rem; }
+        .icon-link { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--gray-dark); transition: var(--transition); position: relative; }
+        .icon-link:hover { background-color: var(--gray-extra-light); color: var(--primary); }
+        .main { max-width: 1200px; margin: 0 auto; padding: 3rem 1.5rem; }
+        .section-header { text-align: center; margin-bottom: 2.5rem; }
+        .section-title { font-size: 2.25rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem; }
+        .section-subtitle { font-size: 1.1rem; color: var(--gray-dark); max-width: 600px; margin: 0 auto; }
+        .filters { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 2rem; gap: 1rem; }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
+        .product-card { background-color: var(--light); border-radius: var(--border-radius); box-shadow: var(--box-shadow); overflow: hidden; transition: var(--transition); position: relative; border: 1px solid var(--gray-light); }
+        .product-card:hover { transform: translateY(-5px); box-shadow: var(--box-shadow-lg); }
+        .product-badge { position: absolute; top: 1rem; left: 1rem; padding: 0.35rem 0.85rem; border-radius: 2rem; font-size: 0.75rem; font-weight: 600; z-index: 10; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge-sale { background-color: var(--secondary-light); color: var(--secondary); }
+        .product-image-container { width: 100%; height: 220px; overflow: hidden; position: relative; background-color: var(--gray-extra-light); }
+        .product-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .product-card:hover .product-image { transform: scale(1.05); }
+        .product-details { padding: 1.5rem; }
+        .product-category { color: var(--accent); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; margin-bottom: 0.5rem; display: block; letter-spacing: 0.5px; }
+        .product-title { font-size: 1.15rem; font-weight: 600; margin-bottom: 0.75rem; }
+        .product-price { display: flex; align-items: baseline; gap: 0.75rem; margin-bottom: 1.5rem; }
+        .current-price { font-size: 1.3rem; font-weight: 700; color: var(--secondary); }
+        .original-price { font-size: 0.9rem; color: var(--gray); text-decoration: line-through; }
+        .product-actions { display: flex; gap: 0.75rem; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.75rem 1.25rem; border-radius: var(--border-radius); font-weight: 500; font-size: 0.9rem; cursor: pointer; transition: var(--transition); border: 1px solid transparent; white-space: nowrap; }
+        .btn-primary { background-color: var(--primary); color: white; flex: 1; }
+        .btn-primary:hover { background-color: var(--primary-dark); transform: translateY(-2px); }
+        .btn-outline { background-color: transparent; border-color: var(--gray-light); color: var(--dark); }
+        .btn-outline:hover { background-color: var(--gray-extra-light); border-color: var(--gray); }
+        .header-search-form {
+            position: relative;
+        }
+        .header-search-input {
+            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--gray-light);
+            font-size: 0.9rem;
+            width: 200px;
+            transition: width 0.3s ease;
+        }
+        .header-search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            width: 250px;
+        }
+        .header-search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+        .footer { background-color: var(--primary-dark); color: white; padding: 4rem 0 2rem; margin-top: 3rem; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <a href="{{ route('tienda.index') }}" class="logo">
+                <div class="logo-icon"><i class="fas fa-store"></i></div>
+                <span class="logo-text">La Tiendita</span>
+            </a>
+            <nav class="nav">
+                <a href="{{ route('tienda.index') }}" class="nav-link">Inicio</a>
+                <a href="{{ route('tienda.categorias') }}" class="nav-link">Categorías</a>
+                <a href="{{ route('tienda.ofertas') }}" class="nav-link active">Ofertas</a>
+                <a href="{{ route('tienda.nosotros') }}" class="nav-link">Nosotros</a>
+            </nav>
+
+            <form action="{{ route('tienda.buscar') }}" method="GET" class="header-search-form">
+                <i class="fas fa-search header-search-icon"></i>
+                <input type="text" name="q" class="header-search-input" placeholder="Buscar productos..." value="{{ request('q') ?? '' }}">
+            </form>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="section-header">
+            <h2 class="section-title"><i class="fas fa-tags"></i> Ofertas Especiales</h2>
+            <p class="section-subtitle">Aprovecha nuestros descuentos exclusivos por tiempo limitado.</p>
+        </div>
+
+        <div class="filters">
+            <span>Ordenar por:</span>
+            <a href="{{ route('tienda.ofertas', ['sort' => 'precio_asc']) }}" class="btn btn-outline">Menor Precio</a>
+            <a href="{{ route('tienda.ofertas', ['sort' => 'precio_desc']) }}" class="btn btn-outline">Mayor Precio</a>
+        </div>
+
+        <div class="products-grid">
+            @forelse($productos as $producto)
+                <div class="product-card">
+                    <div class="product-badge badge-sale">OFERTA</div>
+                    <div class="product-image-container">
+                        <a href="{{ route('tienda.producto', $producto->id) }}">
+                            <img src="{{ $producto->imagen ? asset('storage/' . $producto->imagen) : 'https://via.placeholder.com/300x200?text=Producto' }}" 
+                                 alt="{{ $producto->nombre }}" class="product-image">
+                        </a>
+                    </div>
+                    <div class="product-details">
+                        <a href="{{ route('tienda.categoria', $producto->categoria) }}" class="product-category">{{ $producto->categoria->nombre ?? 'Sin categoría' }}</a>
+                        <h3 class="product-title">{{ $producto->nombre }}</h3>
+                        <div class="product-price">
+                            <span class="original-price">{{ formatCLP($producto->precio) }}</span>
+                            <span class="current-price">{{ formatCLP($producto->precio_oferta) }}</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn btn-primary">
+                                <i class="fas fa-shopping-cart"></i> Añadir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div style="grid-column: 1 / -1; text-align: center; padding: 4rem;">
+                    <h3>No hay productos en oferta en este momento.</h3>
+                    <p>Vuelve a intentarlo más tarde.</p>
+                </div>
+            @endforelse
+        </div>
+
+        <div class="d-flex justify-content-center" style="margin-top: 2rem;">
+            {{ $productos->appends(request()->query())->links() }}
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="header-container">
+            <p>&copy; {{ date('Y') }} La Tiendita. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+</body>
+</html>

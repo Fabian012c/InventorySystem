@@ -128,6 +128,30 @@
             background-color: var(--primary);
         }
 
+        .header-search-form {
+            position: relative;
+        }
+        .header-search-input {
+            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--gray-light);
+            font-size: 0.9rem;
+            width: 200px;
+            transition: width 0.3s ease;
+        }
+        .header-search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            width: 250px;
+        }
+        .header-search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
         /* Icons */
         .nav-icons {
             display: flex;
@@ -167,6 +191,16 @@
             justify-content: center;
             font-weight: 600;
         }
+
+        /* User Menu Styles */
+        .user-menu { position: relative; }
+        .user-menu-trigger { cursor: pointer; }
+        .user-menu-dropdown { display: none; position: absolute; right: 0; top: 100%; background-color: var(--light); border-radius: var(--border-radius); box-shadow: var(--box-shadow-lg); min-width: 180px; z-index: 1100; margin-top: 0.5rem; padding: 0.5rem 0; border: 1px solid var(--gray-light); }
+        .user-menu-dropdown.active { display: block; }
+        .dropdown-item { display: block; padding: 0.75rem 1.25rem; color: var(--dark); text-decoration: none; font-size: 0.9rem; transition: var(--transition); }
+        .dropdown-item:hover { background-color: var(--gray-extra-light); color: var(--primary); }
+        .dropdown-header { padding: 0.75rem 1.25rem; font-weight: 600; color: var(--gray-dark); font-size: 0.95rem; border-bottom: 1px solid var(--gray-light); margin-bottom: 0.25rem; }
+        .d-none { display: none; }
 
         /* Hero Section */
         .hero {
@@ -833,17 +867,38 @@
                         <nav class="nav">
                 <a href="{{ route('tienda.index') }}" class="nav-link active">Inicio</a>
                 <a href="{{ route('tienda.categorias') }}" class="nav-link">Categorías</a>
-                <a href="#" class="nav-link">Ofertas</a>
-                <a href="#" class="nav-link">Nosotros</a>
+                <a href="{{ route('tienda.ofertas') }}" class="nav-link">Ofertas</a>
+                <a href="{{ route('tienda.nosotros') }}" class="nav-link">Nosotros</a>
             </nav>
+
+            <form action="{{ route('tienda.buscar') }}" method="GET" class="header-search-form">
+                <i class="fas fa-search header-search-icon"></i>
+                <input type="text" name="q" class="header-search-input" placeholder="Buscar productos..." value="{{ request('q') ?? '' }}">
+            </form>
             
             <div class="nav-icons">
-                <a href="#" class="icon-link">
-                    <i class="fas fa-search"></i>
-                </a>
-                <a href="#" class="icon-link">
-                    <i class="fas fa-user"></i>
-                </a>
+                @guest
+                    <a href="{{ route('login') }}" class="icon-link"><i class="fas fa-user"></i></a>
+                    <a href="{{ route('register') }}" class="icon-link"><i class="fas fa-user-plus"></i></a>
+                @else
+                    <div class="user-menu">
+                        <a href="#" class="icon-link user-menu-trigger"><i class="fas fa-user-circle"></i></a>
+                        <div class="user-menu-dropdown">
+                            <div class="dropdown-header">Hola, {{ Auth::user()->name }}</div>
+                            @if(Auth::user()->rol == 'admin')
+                                <a href="{{ route('dashboard.index') }}" class="dropdown-item">Inventario</a>
+                            @endif
+                            <a href="#" class="dropdown-item">Mi Carrito</a>
+                            <a class="dropdown-item" href="{{ route('logout') }}"
+                               onclick="event.preventDefault(); document.getElementById('logout-form-index').submit();">
+                                Logout
+                            </a>
+                            <form id="logout-form-index" action="{{ route('logout') }}" method="POST" class="d-none">
+                                @csrf
+                            </form>
+                        </div>
+                    </div>
+                @endguest
                 <a href="#" class="icon-link">
                     <i class="fas fa-shopping-cart"></i>
                     <span class="cart-count">0</span>
@@ -905,7 +960,9 @@
         <div class="products-grid">
             @foreach($productos as $producto)
                 <div class="product-card">
-                    @if(isset($producto->nuevo) && $producto->nuevo)
+                    @if($producto->precio_oferta)
+                        <span class="product-badge badge-sale">OFERTA</span>
+                    @elseif(isset($producto->nuevo) && $producto->nuevo)
                         <span class="product-badge badge-new">Nuevo</span>
                     @elseif(isset($producto->descuento) && $producto->descuento > 0)
                         <span class="product-badge badge-sale">Oferta -{{ $producto->descuento }}%</span>
@@ -941,12 +998,11 @@
                         </div>
 
                         <div class="product-price">
-                            @if(isset($producto->precio_original) && $producto->precio_original > $producto->precio)
-                                <span class="current-price">${{ number_format($producto->precio, 2) }}</span>
-                                <span class="original-price">${{ number_format($producto->precio_original, 2) }}</span>
-                                <span class="discount-badge">Ahorra {{ number_format(($producto->precio_original - $producto->precio)/$producto->precio_original*100, 0) }}%</span>
+                            @if($producto->precio_oferta)
+                                <span class="original-price">{{ formatCLP($producto->precio) }}</span>
+                                <span class="current-price" style="color: var(--secondary);">{{ formatCLP($producto->precio_oferta) }}</span>
                             @else
-                                <span class="current-price">${{ number_format($producto->precio ?? 0, 2) }}</span>
+                                <span class="current-price">{{ formatCLP($producto->precio) }}</span>
                             @endif
                         </div>
                         <div class="product-actions">
@@ -1144,6 +1200,24 @@
                     this.querySelector('input').value = '';
                 } else {
                     alert('Por favor ingresa un email válido');
+                }
+            });
+        }
+
+        // User Menu Dropdown Toggle
+        const userMenuTrigger = document.querySelector('.user-menu-trigger');
+        const userMenuDropdown = document.querySelector('.user-menu-dropdown');
+
+        if (userMenuTrigger && userMenuDropdown) {
+            userMenuTrigger.addEventListener('click', function(event) {
+                event.preventDefault();
+                userMenuDropdown.classList.toggle('active');
+            });
+
+            // Close dropdown if clicked outside
+            document.addEventListener('click', function(event) {
+                if (!userMenuTrigger.contains(event.target) && !userMenuDropdown.contains(event.target)) {
+                    userMenuDropdown.classList.remove('active');
                 }
             });
         }

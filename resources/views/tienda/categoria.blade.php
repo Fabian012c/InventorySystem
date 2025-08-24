@@ -405,8 +405,8 @@
             <nav class="nav">
                 <a href="{{ route('tienda.index') }}" class="nav-link">Inicio</a>
                 <a href="{{ route('tienda.categorias') }}" class="nav-link active">Categorías</a>
-                <a href="#" class="nav-link">Ofertas</a>
-                <a href="#" class="nav-link">Nosotros</a>
+                <a href="{{ route('tienda.ofertas') }}" class="nav-link">Ofertas</a>
+                <a href="{{ route('tienda.nosotros') }}" class="nav-link">Nosotros</a>
             </nav>
             
             <div class="nav-icons">
@@ -432,6 +432,9 @@
         <div class="products-grid">
             @forelse($productos as $producto)
                 <div class="product-card">
+                    @if($producto->precio_oferta)
+                        <div class="product-badge badge-sale">OFERTA</div>
+                    @endif
                     <div class="product-image-container">
                         <img src="{{ $producto->imagen ? asset('storage/' . $producto->imagen) : 'https://via.placeholder.com/300x200?text=Producto' }}" 
                              alt="{{ $producto->nombre }}" class="product-image">
@@ -451,7 +454,12 @@
                         </div>
 
                         <div class="product-price">
-                            <span class="current-price">${{ number_format($producto->precio ?? 0, 2) }}</span>
+                            @if($producto->precio_oferta)
+                                <span class="original-price">{{ formatCLP($producto->precio) }}</span>
+                                <span class="current-price" style="color: var(--secondary);">{{ formatCLP($producto->precio_oferta) }}</span>
+                            @else
+                                <span class="current-price">{{ formatCLP($producto->precio ?? 0) }}</span>
+                            @endif
                         </div>
                         <div class="product-actions">
                             <button class="btn btn-primary">

@@ -14,7 +14,8 @@ class Producto extends Model
         'descripcion',
         'codigo',
         'imagen',
-        'precio'
+        'precio',
+        'precio_oferta'
     ];
 
     public function categoria()
@@ -22,4 +23,8 @@ class Producto extends Model
         return $this->belongsTo(Categoria::class);
     }
 
+    public function scopeOnSale($query)
+    {
+        return $query->whereNotNull('precio_oferta');
     }
+}
